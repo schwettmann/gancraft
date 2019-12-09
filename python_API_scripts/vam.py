@@ -14,6 +14,7 @@ import os
 import random
 import string
 import urllib
+import time
 
 cos_credentials = {
   "apikey": "gF_7Gjvqflf4TPju7t5lbgR4NB9dDAQ8EVwf1DmwKGDo",
@@ -100,7 +101,8 @@ URL = "http://www.vam.ac.uk/api/json/museumobject/search?"
 #style of art we're looking for:
 
 #parameters
-PARAMS = {'q': "landscape", 'limit': 45, "offset": 0}
+
+PARAMS = {'q': "painting|print|drawing", 'limit': 45, "offset": 0}
 
 #open a JSON file to save image data
 f = open("/root/UROP/vam_data.json", "w")
@@ -133,7 +135,7 @@ def downloadUploadFromURL(data):
         # also query each object number for specific info
         url_id = imageDict['fields']["primary_image_id"]
         objectNum = imageDict['fields']["object_number"]
-        getSpecificData(objectNum)
+        # getSpecificData(objectNum)
         if url_id is not None:
             try:
                 url = "http://media.vam.ac.uk/media/thira/collection_images/" + url_id[:6] + "/" + url_id + ".jpg"
@@ -148,7 +150,6 @@ def downloadUploadFromURL(data):
     remove_files_from_dir(working_dir) 
 
 def putDirectlyInBucket(data):
-    
     working_dir = "/mnt/victoria-and-albert"
 
     for imageDict in data['records']:
@@ -159,7 +160,8 @@ def putDirectlyInBucket(data):
             url_id = imageDict['fields']["primary_image_id"]
             url = "http://media.vam.ac.uk/media/thira/collection_images/" + url_id[0:6] + "/" + url_id + ".jpg"
             file_name = url_id
-            download_file_from_url(url, file_name, save_directory=working_dir)                
+            download_file_from_url(url, file_name, save_directory=working_dir)  
+            time.sleep(1)
         except:
             print("Something went wrong")
 
@@ -170,33 +172,16 @@ def addType100():
     calls downloadUpload
     """
 
-    while PARAMS['offset'] < 25111:
+    while PARAMS['offset'] < 15263:
         r = requests.get(url = URL, params = PARAMS)
         data = r.json()
-        # putDirectlyInBucket(data)
-        getSpecificData(data)
+        putDirectlyInBucket(data)
+        # getSpecificData(data)
         # deleteObjects(data)
         PARAMS['offset'] += 45
         print(PARAMS['offset'])
-
-def deleteObjects(data):
-    # add landscape back in as a param
-    delete_request = {"Objects": []}
-    for imageDict in data['artObjects']:
-        # I want to download and upload the image, but
-        # also query each object number for specific info
-        if imageDict['hasImage']:
-            try:
-                url = imageDict['webImage']['url']
-                to_delete_filename = os.path.basename(url)
-                delete_request["Objects"].append({"Key": to_delete_filename})
-            except:
-                print(imageDict)
-    try:
-        cos_client.delete_objects(Bucket='rijksmuseum', Delete=delete_request)
-    except:
-        print("eh")
-
+        if PARAMS['offset'] % 90 == 0:
+            time.sleep(3500)
 
 addType100()
 

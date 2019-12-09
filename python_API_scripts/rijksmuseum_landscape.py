@@ -100,7 +100,7 @@ URL = "https://www.rijksmuseum.nl/api/en/collection"
 #style of art we're looking for:
 styles = {"print": 144, "drawing": 15, "painting": 5}
 #parameters
-PARAMS = {'key': "PSMxmVQF", 'p': 0, 'format': "json", 'ps': 100, "q": "landscape"}
+PARAMS = {'key': "PSMxmVQF", 'p': 0, 'format': "json", 'ps': 100}
 
 #open a JSON file to save image data
 f = open("/root/UROP/rijks_data.json", "w")
