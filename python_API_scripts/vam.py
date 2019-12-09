@@ -150,7 +150,7 @@ def downloadUploadFromURL(data):
     remove_files_from_dir(working_dir) 
 
 def putDirectlyInBucket(data):
-    working_dir = "/mnt/victoria-and-albert"
+    working_dir = "/mnt/vam"
 
     for imageDict in data['records']:
         # I want to download and upload the image, but
