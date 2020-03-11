@@ -104,7 +104,7 @@ def make_keyword():
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
-                search_terms.append(" ".join([row[1], row[3], row[5]]))
+                search_terms.append("+".join([row[1], row[3], row[5]]))
                 line_count += 1
 
     print(f'Processed {line_count} lines.')
@@ -123,7 +123,7 @@ def make_keyword():
 
 def get_link_from_html(query):
     user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
-    url = "https://www.google.com/search?tbm=isch&q=" + query
+    url = "http://www.bing.com/images/search?q=" + query + "&FORM=HDRSC2" 
     headers = {'User-Agent': user_agent, }
     request = urllib.Request(url, None, headers)
     html = urllib.urlopen(request).read()
