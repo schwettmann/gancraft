@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import urllib.request 
 import urllib.parse
 import requests
-import pprint
 import ibm_boto3
 from ibm_botocore.client import Config
 import boto3
@@ -140,7 +139,7 @@ def get_link_from_html(query):
             murl = m_data["murl"]
         return murl
     except:
-        print("Error in accessing image data or URL")
+        pass
     
     return -1
 
