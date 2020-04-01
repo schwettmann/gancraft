@@ -1,7 +1,8 @@
 import csv
 import json
 from bs4 import BeautifulSoup
-import urllib.request as urllib
+import urllib.request 
+import urllib.parse
 import requests
 import pprint
 import ibm_boto3
@@ -78,7 +79,7 @@ def download_file_from_url(file_url, file_name, save_directory=None):
     if os.path.exists(file_path):
         os.remove(file_path)
 
-    file_path, _ = urllib.urlretrieve(file_url, file_path)
+    file_path, _ = urllib.request.urlretrieve(file_url, file_path)
     # stat_info = os.stat(file_path)
     # print('Downloaded', file_path, stat_info.st_size, 'bytes.')
     
@@ -93,10 +94,9 @@ def remove_files_from_dir(dir):
 #############################################################JUPYTER NOTEBOOK FUNCTIONS################################################################
 
 
-
 def make_keyword():
     search_terms = []
-    with open('item_no_image_with_names.csv') as csv_file:
+    with open('/root/UROP/item_no_image_with_names.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
@@ -104,40 +104,61 @@ def make_keyword():
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
-                search_terms.append("+".join([row[1], row[3], row[5]]))
+                term = "+".join([row[1].translate(str.maketrans('', '', string.punctuation)), row[3].translate(str.maketrans('', '', string.punctuation)), row[5].translate(str.maketrans('', '', string.punctuation))])
+                term = term.replace(" ", "+").strip("+")
+                search_terms.append(term)
                 line_count += 1
 
     print(f'Processed {line_count} lines.')
     return search_terms
 
-# def scrape_google():
-#     response = google_images_download.googleimagesdownload()   #class instantiation
-#     for query in search_terms:
-#         try:
-#             arguments = {"keywords":query,"limit":2, "print_urls":True}   #creating list of arguments
-#             response.download(arguments)   #passing the arguments to the function
-#         except:
-#             print(query)
-#     # print(paths)   #printing absolute paths of the downloaded images
-
 
 def get_link_from_html(query):
+    """
+    Helper function to get first image url from bing response based on query
+    params:
+        query: bing image search query
+    returns:
+        image url if available
+        else -1
+    """
     user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
-    url = "http://www.bing.com/images/search?q=" + query + "&FORM=HDRSC2" 
+    url = "http://www.bing.com/images/search?q=" + urllib.parse.quote(query) + "&FORM=HDRSC2" 
     headers = {'User-Agent': user_agent, }
-    request = urllib.Request(url, None, headers)
-    html = urllib.urlopen(request).read()
-    soup = BeautifulSoup(html,'html.parser')
-    for link in soup.find_all('a'):
-        print(link)
-        #PROBLEM HERE: where is the image link within the html?
-    return 0  
+    request = urllib.request.Request(url, None, headers)
+    html = urllib.request.urlopen(request).read()
+    try:
+        soup = BeautifulSoup(html,'html.parser')
+    except:
+        print("Could not parse HTML response")
+
+    try:
+        image_data = soup.find_all('li', {"data-idx": "1"})
+        a_data = image_data[0].find('a')
+        m_data = eval(a_data["m"])
+        if isinstance(m_data, dict):
+            murl = m_data["murl"]
+        return murl
+    except:
+        print("Error in accessing image data or URL")
+    
+    return -1
+
+
 
 def download_image(query):
     working_dir = "/mnt/restofallpaintings"
+    # working_dir= "/Users/anisha/UROP"
     url = get_link_from_html(query)
-    download_file_from_url(url, query, save_directory=working_dir)  
-
+    if url != -1:
+        file_name = query + ".jpg"
+        try:
+            download_file_from_url(url, file_name, save_directory=working_dir)  
+            with open('/root/UROP/metadata.csv', 'a', newline='') as meta:
+                writer = csv.writer(meta)
+                writer.writerow([query, url])
+        except:
+            pass
 
 
 def run():
@@ -145,16 +166,7 @@ def run():
     search_terms = make_keyword()
     pool.map(download_image, search_terms)
 
+# print(len(terms))
+# download_image(terms[0])
+run()
 
-# def get_url_from_html():
-
-
-
-
-# 
-# get_text_from_html("cat")
-
-# parallelize: Pool.map
-#threads rather than processing 
-#data list is the queries
-#function retrieves the query, query must be parsed, get first image in results, curl, save to bucket
