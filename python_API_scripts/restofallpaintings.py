@@ -95,6 +95,7 @@ def remove_files_from_dir(dir):
 
 def make_keyword():
     search_terms = []
+    punctuation = {'!', '"', '#', '$', '%','&', "'", '(', ')', '*','+',',', '.','/','<', '=', '>','?','@','[', ']','^','_','{','|','}','~'}
     with open('/root/UROP/item_no_image_with_names.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
@@ -103,7 +104,7 @@ def make_keyword():
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
-                term = "+".join([row[1].translate(str.maketrans('', '', string.punctuation)), row[3].translate(str.maketrans('', '', string.punctuation)), row[5].translate(str.maketrans('', '', string.punctuation))])
+                term = "+".join([row[1].translate(str.maketrans('', '', punctuation)), row[3].translate(str.maketrans('', '', punctuation)), row[5].translate(str.maketrans('', '', punctuation))])
                 term = term.replace(" ", "+").strip("+")
                 search_terms.append(term)
                 line_count += 1
@@ -122,7 +123,7 @@ def get_link_from_html(query):
         else -1
     """
     user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
-    url = "http://www.bing.com/images/search?q=" + urllib.parse.quote(query) + "&FORM=HDRSC2" 
+    url = "http://www.bing.com/images/search?q=" + urllib.parse.quote(query) +"+painting+painting" + "&FORM=HDRSC2" 
     headers = {'User-Agent': user_agent, }
     request = urllib.request.Request(url, None, headers)
     html = urllib.request.urlopen(request).read()
