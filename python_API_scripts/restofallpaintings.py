@@ -95,7 +95,7 @@ def remove_files_from_dir(dir):
 
 def make_keyword():
     search_terms = []
-    punctuation = {'!', '"', '#', '$', '%','&', "'", '(', ')', '*','+',',', '.','/','<', '=', '>','?','@','[', ']','^','_','{','|','}','~'}
+    punctuation = '!#$%&()*+,./:;<=>?@[\]^_`{|}~'
     with open('/root/UROP/item_no_image_with_names.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
