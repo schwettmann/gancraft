@@ -103,11 +103,14 @@ def make_keyword():
             if line_count == 0:
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
-            else:
+            elif line_count > 94718:
                 term = "+".join([row[1].translate(str.maketrans('', '', punctuation)), row[3].translate(str.maketrans('', '', punctuation)), row[5].translate(str.maketrans('', '', punctuation))])
                 term = term.replace(" ", "+").strip("+")
                 search_terms.append(term)
                 line_count += 1
+            else:
+                line_count += 1
+
 
     print(f'Processed {line_count} lines.')
     return search_terms
