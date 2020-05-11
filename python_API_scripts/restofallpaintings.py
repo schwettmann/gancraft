@@ -221,12 +221,15 @@ def download_image(image_info):
 
 
 def top_fn(url_name_museum):
-    url = url_name_museum[0]
-    name = url_name_museum[1]
-    museum = url_name_museum[2]
-    ref_url = get_ref_from_wiki((url, museum))
+    try:
+        url = url_name_museum[0]
+        name = url_name_museum[1]
+        museum = url_name_museum[2]
+        ref_url = get_ref_from_wiki((url, museum))
 
-    get_image_from_html((ref_url, name, museum))
+        get_image_from_html((ref_url, name, museum))
+    except:
+        pass
 
 
 
