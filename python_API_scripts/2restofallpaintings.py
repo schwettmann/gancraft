@@ -231,8 +231,6 @@ def top_fn(url_name_museum):
 
         get_image_from_html((ref_url, name, museum))
     except:
-        if ref_url is not None:
-            print(ref_url)
         pass
 
 
