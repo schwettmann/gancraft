@@ -231,7 +231,7 @@ def top_fn(url_name_museum):
 
         get_image_from_html((ref_url, name, museum))
     except:
-        pass
+        print(ref_url)
 
 
 
