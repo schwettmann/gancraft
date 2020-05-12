@@ -119,6 +119,8 @@ def make_search_terms():
                 painting = [row[0], row[1], row[5]]
                 line_count += 1
                 paintings_to_parse.append(painting)
+            else:
+                line_count += 1
 
 
     print(f'Processed {line_count} lines.')
