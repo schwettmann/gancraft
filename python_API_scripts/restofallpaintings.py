@@ -171,6 +171,7 @@ def get_image_from_html(data):
         # print(images)
         
         for i in range(len(images)):
+            image_link = "never set"
             try:
                 if museum == "Museum of Modern Art":
                     image_link = "http://www.moma.org" + images[i]['src'] 
@@ -193,14 +194,26 @@ def get_image_from_html(data):
                 success = download_image((image_link, image_name, museum))
                 
                 if success:
-
                     break
+
                 else:
-                    continue
+                    with open('errors.csv', 'a', newline='') as csvfile:
+                        errorwriter = csv.writer(csvfile, delimiter=',',
+                                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                        errorwriter.writerow(data + image_link)
             except:
-                pass
+                with open('errors.csv', 'a', newline='') as csvfile:
+                    errorwriter = csv.writer(csvfile, delimiter=',',
+                                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    errorwriter.writerow(data + image_link)
+
 
     except:
+        with open('errors.csv', 'a', newline='') as csvfile:
+            errorwriter = csv.writer(csvfile, delimiter=',',
+                                    quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            errorwriter.writerow(data)
+
         print("download of image failed")
     
 
