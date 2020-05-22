@@ -115,7 +115,7 @@ def make_search_terms():
             if line_count == 0:
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
-            elif line_count > 0 and line_count < 100000:
+            elif line_count > 200000 and line_count < 300000:
                 painting = [row[0], row[1], row[5]]
                 line_count += 1
                 paintings_to_parse.append(painting)
@@ -125,6 +125,7 @@ def make_search_terms():
 
     print(f'Processed {line_count} lines.')
     return paintings_to_parse
+
 
 
 def get_ref_from_wiki(wikilink):
@@ -154,6 +155,7 @@ def get_image_from_html(data):
     params:
         data: [ref_url, painting name, museum_name]
     """
+    error_rows = []
     image_name = data[1]
     museum = data[2]
     user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
@@ -173,6 +175,7 @@ def get_image_from_html(data):
         # print(images)
         
         for i in range(len(images)):
+            image_link = "uninitialized"
             try:
                 if museum == "Museum of Modern Art":
                     image_link = "http://www.moma.org" + images[i]['src'] 
@@ -195,16 +198,21 @@ def get_image_from_html(data):
                 success = download_image((image_link, image_name, museum))
                 
                 if success:
+                    return []
 
-                    break
                 else:
                     continue
             except:
                 pass
 
     except:
-        print("download of image failed")
+        data.append("error getting images on page")
+        
     
+    error_rows.append(data)
+
+    return error_rows
+
 
 def download_image(image_info):
     working_dir = "/mnt/restofallpaintings"
@@ -219,8 +227,8 @@ def download_image(image_info):
         return True
     except:
         # print("couldnt download image")
-        pass
 
+        return False
 
 def top_fn(url_name_museum):
     try:
@@ -229,9 +237,16 @@ def top_fn(url_name_museum):
         museum = url_name_museum[2]
         ref_url = get_ref_from_wiki((url, museum))
 
-        get_image_from_html((ref_url, name, museum))
+        error_rows = get_image_from_html((ref_url, name, museum))
+        if len(error_rows) > 0:
+            with open('errors.csv', 'a', newline='') as csvfile:
+                spamwriter = csv.writer(csvfile,
+                                        quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                spamwriter.writerows(error_rows)
+
     except:
         pass
+
 
 
 def run():

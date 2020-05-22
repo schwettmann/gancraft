@@ -115,7 +115,7 @@ def make_search_terms():
             if line_count == 0:
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
-            elif line_count > 100000 and line_count < 200000:
+            elif line_count > 0 and line_count < 100000:
                 painting = [row[0], row[1], row[5]]
                 line_count += 1
                 paintings_to_parse.append(painting)
