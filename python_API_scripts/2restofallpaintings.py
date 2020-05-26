@@ -268,8 +268,8 @@ def run():
 
 # print(len(terms))
 # download_image(terms[0])
-# run()
+run()
 # download_image("test")
-get_image_from_html(["https://skd-online-collection.skd.museum/Details/Index/352452", "Zwei Flügel eines Altars (Geißelung Christi)", "?"])
+# get_image_from_html(["https://skd-online-collection.skd.museum/Details/Index/352452", "Zwei Flügel eines Altars (Geißelung Christi)", "?"])
 # make_search_terms()
 # get_ref_from_wiki("http://www.wikidata.org/entity/Q66016628")
