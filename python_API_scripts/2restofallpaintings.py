@@ -12,6 +12,9 @@ import random
 import string
 import time
 from multiprocessing import Pool
+import os.path
+from os import path
+
 
 cos_credentials = {
   "apikey": "gF_7Gjvqflf4TPju7t5lbgR4NB9dDAQ8EVwf1DmwKGDo",
@@ -232,7 +235,9 @@ def download_image(image_info):
     url = image_info[0]
     file_name = image_info[1] + ".jpg"
     try:
-        download_file_from_url(url, file_name, save_directory=working_dir)  
+        file_path = working_dir + "/" + file_name
+        if not path.exists(file_path):
+            download_file_from_url(url, file_name, save_directory=working_dir)  
         # with open('/root/UROP/metadata.csv', 'a', newline='') as meta:
         #     writer = csv.writer(meta)
         #     writer.writerow([query, url])
