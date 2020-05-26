@@ -146,6 +146,8 @@ def get_ref_from_wiki(wikilink):
 
                     # print(reference['snaks'][ref_url][0]['datavalue']['value'])
                     return reference['snaks'][ref_url][0]['datavalue']['value']
+                else:
+                    return None
                 
 
 
@@ -191,6 +193,16 @@ def get_image_from_html(data):
                     continue
                 elif museum == 'National Galleries of Scotland' and i in range(0, 10):
                     continue
+                
+                elif museum == "National Gallery of Australia":
+                    if i in (0,1):
+                         continue
+                    else:
+                        image_link = "https://artsearch.nga.gov.au" + images[i]['src']
+                
+                elif "https://skd-online-collection.skd.museum/" in url:
+                    image_link = "https://skd-online-collection.skd.museum/" + images[i]['src']
+
 
                 else:
                     image_link = images[i]['src']
@@ -236,13 +248,13 @@ def top_fn(url_name_museum):
         name = url_name_museum[1]
         museum = url_name_museum[2]
         ref_url = get_ref_from_wiki((url, museum))
-
-        error_rows = get_image_from_html((ref_url, name, museum))
-        if len(error_rows) > 0:
-            with open('errors.csv', 'a', newline='') as csvfile:
+        if ref_url is None:
+            with open('norefs.csv', 'a', newline='') as csvfile:
                 spamwriter = csv.writer(csvfile,
                                         quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                spamwriter.writerows(error_rows)
+                spamwriter.writerows([url, museum])
+
+        error_rows = get_image_from_html((ref_url, name, museum))
 
     except:
         pass
@@ -256,8 +268,8 @@ def run():
 
 # print(len(terms))
 # download_image(terms[0])
-run()
+# run()
 # download_image("test")
-# get_link_from_html("https://www.museothyssen.org/en/collection/artists/delvaux-paul/viaduct")
+get_image_from_html(["https://skd-online-collection.skd.museum/Details/Index/352452", "Zwei Flügel eines Altars (Geißelung Christi)", "?"])
 # make_search_terms()
 # get_ref_from_wiki("http://www.wikidata.org/entity/Q66016628")
