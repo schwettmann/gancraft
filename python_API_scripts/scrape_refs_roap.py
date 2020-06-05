@@ -234,7 +234,7 @@ def download_image(image_info):
         return False
 
 def top_fn(url_name_museum):
-    if success_count % 1000 == 0:
+    if success_count % 100 == 0:
         print("##############################################################")
         print(success_count)
         print("##############################################################")
