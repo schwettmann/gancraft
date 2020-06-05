@@ -15,6 +15,7 @@ from multiprocessing import Pool
 import os.path
 from os import path
 
+success_count = 0
 
 def get_credentials(credential_file):
     """
@@ -122,8 +123,12 @@ def make_search_terms():
                 painting = [row[4], row[8], row[12]]
                 line_count += 1
                 paintings_to_parse.append(painting)
+                # if "https://collections.gilcrease.org" in painting[0]:
+                #     print (painting)
+
             else:
                 line_count += 1
+            
 
     print(f'Processed {line_count} lines.')
     return paintings_to_parse
@@ -180,13 +185,19 @@ def get_image_from_html(data):
                 elif "https://skd-online-collection.skd.museum/" in url:
                     image_link = "https://skd-online-collection.skd.museum/" + images[i]['src']
 
+                elif "https://www.ngv.vic.gov.au/" in url:
+                    image_link = "https:" + images[i]['src']
+                    print(image_link)
 
                 else:
                     image_link = images[i]['src']
+                    if image_link[0:2] == "//":
+                        image_link += "https:"
                 
                 success = download_image((image_link, image_name, museum))
                 
                 if success:
+                    success_count += 1
                     return True
 
                 else:
@@ -218,11 +229,15 @@ def download_image(image_info):
         #     writer.writerow([query, url])
         return True
     except:
-        # print("couldnt download image")
+        print("download_img failed: " + url)
 
         return False
 
 def top_fn(url_name_museum):
+    if success_count % 1000 == 0:
+        print("##############################################################")
+        print(success_count)
+        print("##############################################################")
     try:
         ref_url = url_name_museum[0]
         name = url_name_museum[1]
@@ -230,7 +245,7 @@ def top_fn(url_name_museum):
         get_image_from_html((ref_url, name, museum))
 
     except:
-        pass
+        print("top fn failed: " + ref_url)
 
 
 
@@ -243,6 +258,6 @@ def run():
 # download_image(terms[0])
 run()
 # download_image("test")
-# get_image_from_html(["https://www.ngv.vic.gov.au/explore/collection/work/91211/", "Zwei Flügel eines Altars (Geißelung Christi)", "?"])
+# get_image_from_html(['https://collections.gilcrease.org/object/012247', "elk man", ""])
 # make_search_terms()
 # get_ref_from_wiki("http://www.wikidata.org/entity/Q66016628")
